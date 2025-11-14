@@ -1,4 +1,5 @@
 import { products, type Product } from '../src/data/products'
+import { load } from 'cheerio'
 
 const USER_AGENT =
   'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
@@ -18,16 +19,39 @@ function isAmazonUrl(url: string) {
 
 function detectAmazonAvailability(html: string): ProductCheckResult['availability'] {
   const normalized = html.replace(/\s+/g, ' ').toLowerCase()
-  if (/(currently unavailable|temporarily out of stock|out of stock)/.test(normalized)) {
-    return 'unavailable'
-  }
 
-  if (/(in stock|available to ship|ready to ship)/.test(normalized)) {
+  // Strong positive "can buy this" signals
+  const hasAddToCartText =
+    normalized.includes('add to cart') ||
+    normalized.includes('buy now') ||
+    normalized.includes('purchase options and add-ons') ||
+    // Many items that are only 3rd-party show this but are still purchasable
+    normalized.includes('other sellers')
+
+  const hasInStockText =
+    normalized.includes('in stock') ||
+    normalized.includes('available to ship') ||
+    normalized.includes('ready to ship')
+
+  const hasUnavailableText = /(currently unavailable|temporarily out of stock|out of stock)/.test(
+    normalized
+  )
+
+  // 1) If we clearly see a way to buy it, treat as in-stock
+  if (hasAddToCartText || hasInStockText) {
     return 'in-stock'
   }
 
+  // 2) Only treat as unavailable if we see the bad words *and* no positive signals
+  if (hasUnavailableText) {
+    return 'unavailable'
+  }
+
+  // 3) Everything else is unknown
   return 'unknown'
 }
+
+
 
 async function checkProduct(product: Product): Promise<ProductCheckResult> {
   const result: ProductCheckResult = {
