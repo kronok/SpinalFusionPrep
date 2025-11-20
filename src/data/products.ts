@@ -178,4 +178,22 @@ export const products: Product[] = [
     image: "button_up_loose_sleepwear.jpg",
     link: "https://amzn.to/3LGMCkT"
   }
+  ,
+  {
+    id: "disposable_cups_for_brushing_teeth",
+    name: "Disposable Cups for Brushing Teeth",
+    description: "You'll want 2 cups when you brush your teeth. 1 for water, and 1 for spitting into. It'll be really difficult to brush your teeth initially, but this will help you not make a huge mess.",
+    categories: ["Bathroom"],
+    image: "disposable_cups_for_brushing_teeth.jpg",
+    link: "https://amzn.to/44mDacP"
+  }
+  ,
+  {
+    id: "extra_pillows",
+    name: "Extra Pillows",
+    description: "You're going to want extra pillows if you don't have some laying around. At least 4 total would be good.",
+    categories: ["Bedroom", "Sleep"],
+    image: "extra_pillows.jpg",
+    link: "https://amzn.to/3XCd3uD"
+  }
 ]
